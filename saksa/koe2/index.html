@@ -101,7 +101,7 @@ SECTIONS.forEach(section=>{
  });
  card.append(holder);root.append(card);
 });
-function normalize(s){return String(s||"").normalize("NFC").trim().toLocaleLowerCase("de-DE").replace(/\\s+/g," ").replace(/[.!?]+$/,"");}
+function normalize(s){return String(s||"").normalize("NFC").trim().toLocaleLowerCase("de-DE").replace(/\s+/g," ").replace(/[.!?]+$/,"");}
 function response(i,q){if(q.t==="choice"){const radio=document.querySelector('input[name="q'+i+'"]:checked');return radio?radio.value:"";}return document.getElementById("answer"+i).value;}
 function onEdit(){updateProgress();hideGrading();}
 function updateProgress(){let done=0;ITEMS.forEach((q,i)=>{if(String(response(i,q)).trim())done++;});document.getElementById("counter").textContent="Vastattu "+done+"/"+ITEMS.length;document.getElementById("bar").style.width=(100*done/ITEMS.length)+"%";document.getElementById("progress").setAttribute("aria-valuenow",done);return done;}
