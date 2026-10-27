@@ -21,3 +21,17 @@ Peli toimii selaimessa ilman asennusta, ja edistyminen tallentuu laitteelle.
 - Sanasto, *weil*-sivulauseet, Perfekt ja luetun ymmärtäminen.
 - Ajastin, tulostus, kirjoitusbonus ja paras tulos laitteella.
 - Itsenäinen harjoitusmateriaali, ei koulun tai kustantajan virallinen koe.
+
+## Saksan harjoituskoe 2 – kirjan kielioppisivujen mukaan
+
+**Pelaa:** https://parasolnordic.github.io/treeni/saksa/koe2/
+
+- 37 pisteytettävää tehtävää (25 minuutin ajastin), joista useissa kirjoitetaan oikea Perfekt-muoto itse.
+- Weil-lauseet ja verbin paikka; haben/sein-apuverbit eri persoonissa.
+- Kirjan Perfekt-verbit (säännölliset ja epäsäännölliset), mukaan lukien *fragen, reden, wechseln, weinen, wohnen, gefallen, reiten, helfen, streiten*.
+- Kirjan erotettavat verbit: *anfangen, anmelden, anrufen, einladen, kennenlernen, mitfahren, umziehen*.
+- *Woher? / Wo?*: *aus/in*, *aus der/in der*, *aus den/in den* mm. Sveitsi, Turkki ja USA.
+- Aukeava kertauslista sisältää kaikki kuvissa näkyvät Perfekt-muodot ja maiden rakenteet.
+- Automaattinen pisteytys, suomenkieliset selitykset, tulostus ja oma ennätys paikallisesti.
+
+Harjoitus on itsenäisesti laadittu käyttäjän lähettämien kirjansivujen perusteella; ei koulun virallinen koe. Alkuperäinen saksan harjoituskoe 1 säilyy osoitteessa `/treeni/saksa/` ja matematiikkapeli etusivulla.
