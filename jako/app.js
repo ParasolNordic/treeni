@@ -91,7 +91,7 @@
 
   /* ---------------- Navigointi ---------------- */
   var view = { name: S.dog ? 'home' : 'adopt' }, sess = null, game = null;
-  function go(name, params) { TTS.stop(); view = Object.assign({ name: name }, params || {}); render(); window.scrollTo(0, 0); }
+  function go(name, params) { explainToken++; TTS.stop(); view = Object.assign({ name: name }, params || {}); render(); window.scrollTo(0, 0); }
   function render() {
     var html;
     switch (view.name) {
@@ -258,7 +258,7 @@
   }
 
   /* Syöttö */
-  var slots = [], active = null, mSel = null;
+  var slots = [], active = null, mSel = null, explainToken = 0;
   function initSlots() { slots = $$('[data-slot]'); mSel = null; var first = slots.filter(function (s) { return !s.textContent; })[0] || slots[0]; setActive(first || null); }
   function setActive(el) { if (active) active.classList.remove('active'); active = el; if (active) active.classList.add('active'); }
   function typeDigit(dg) {
@@ -353,7 +353,7 @@
       sfx.ok();
       if (sess.si < q.steps.length - 1) {
         lock(); fb.hidden = false; fb.className = 'feedback good'; fb.innerHTML = '<b>Oikein!</b> Jatketaan seuraavaan vaiheeseen.';
-        setTimeout(function () { sess.si++; sess.tries = 0; render(); }, reduceMotion ? 250 : 800);
+        setTimeout(function () { stopExplain(); sess.si++; sess.tries = 0; render(); }, reduceMotion ? 250 : 800);
       } else finishQ(true);
       return;
     }
@@ -393,6 +393,7 @@
     showReward({ title: pick(PRAISE), bones: bones, sub: extra || (sess.firstOk ? '' : 'Sait sen toisella yrityksellä – hyvä sisu!') }, nextQ);
   }
   function nextQ() {
+    stopExplain();
     sess.qi++; sess.si = 0; sess.tries = 0; sess.firstOk = true; sess.matchMap = {};
     if (sess.qi >= sess.qs.length) return finishLevel();
     render(); window.scrollTo(0, 0);
@@ -460,6 +461,7 @@
     if (st.kind === 'multi') return !a.sel.length;
     return false;
   }
+  function stopExplain() { explainToken++; TTS.stop(); }
   function examGo(i) { examSave(); sess.qi = Math.max(0, Math.min(sess.qs.length - 1, i)); render(); window.scrollTo(0, 0); }
   function taskCore(st) {
     if (st.big) return '<b>' + st.big + '</b>';
@@ -734,10 +736,13 @@
         sfx.tap(); break;
       }
       case 'nextq': nextQ(); break;
-      case 'nextstep': sess.si++; sess.tries = 0; render(); break;
+      case 'nextstep': stopExplain(); sess.si++; sess.tries = 0; render(); break;
       case 'explain': {
-        st = curStep(); var box = document.getElementById('explain'); box.hidden = false;
-        TTS.speak(st.explain);
+        /* Teksti näytetään vasta, kun ääni on lausuttu loppuun (tai lapsi lopettaa sen / ääni ei toimi). */
+        st = curStep(); var box = document.getElementById('explain'), token = ++explainToken;
+        TTS.speak(st.explain).then(function () {
+          if (token === explainToken && box && box.isConnected) box.hidden = false;
+        });
         break;
       }
       case 'helper': { var h = document.getElementById('helper'); h.hidden = !h.hidden; el.setAttribute('aria-expanded', String(!h.hidden)); break; }
