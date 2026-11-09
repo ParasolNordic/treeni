@@ -91,7 +91,7 @@
 
   /* ---------------- Navigointi ---------------- */
   var view = { name: S.dog ? 'home' : 'adopt' }, sess = null, game = null;
-  function go(name, params) { explainToken++; TTS.stop(); view = Object.assign({ name: name }, params || {}); render(); window.scrollTo(0, 0); }
+  function go(name, params) { explainToken++; try { TTS.stop(); } catch (e) { /* ok */ } view = Object.assign({ name: name }, params || {}); render(); window.scrollTo(0, 0); }
   function render() {
     var html;
     switch (view.name) {
@@ -461,7 +461,7 @@
     if (st.kind === 'multi') return !a.sel.length;
     return false;
   }
-  function stopExplain() { explainToken++; TTS.stop(); }
+  function stopExplain() { explainToken++; try { TTS.stop(); } catch (e) { /* ok */ } }
   function examGo(i) { examSave(); sess.qi = Math.max(0, Math.min(sess.qs.length - 1, i)); render(); window.scrollTo(0, 0); }
   function taskCore(st) {
     if (st.big) return '<b>' + st.big + '</b>';
@@ -682,7 +682,7 @@
       '<h3>Korvat</h3><div class="pills">' + Object.keys(D.EARS).map(function (k) { return '<button class="pill' + (S.dog.ears === k ? ' on' : '') + '" data-act="set-ears" data-v="' + k + '">' + D.EARS[k] + '</button>'; }).join('') + '</div>' +
       '<label class="switch"><input type="checkbox" id="set-sound"' + (S.settings.sound ? ' checked' : '') + '><span>Äänitehosteet</span></label>' +
       '<p class="small">Selitysääni: ' + (TTS.hasVoice() ? 'ElevenLabs-ääni käytössä. Ääni haetaan vain, kun painat Selitä-nappia, ja kerran kuunneltu selitys tallentuu laitteelle.' : 'Laitteen oma puheääni (ElevenLabs-avainta ei ole asetettu).') + '</p>' +
-      '<div class="btn-row"><button class="cta" data-act="settings-close">Valmis</button><button class="ghost danger" data-act="reset">Aloita alusta</button></div></div>';
+      '<div class="btn-row"><button class="cta" data-act="settings-close">Valmis</button><button class="ghost danger" data-act="reset">Aloita alusta</button></div><p class="small">Versio ' + VERSION + '</p></div>';
     $ov.hidden = false; rewardCb = function () { render(); };
   }
   function saveSettings() {
@@ -740,9 +740,8 @@
       case 'explain': {
         /* Teksti näytetään vasta, kun ääni on lausuttu loppuun (tai lapsi lopettaa sen / ääni ei toimi). */
         st = curStep(); var box = document.getElementById('explain'), token = ++explainToken;
-        TTS.speak(st.explain).then(function () {
-          if (token === explainToken && box && box.isConnected) box.hidden = false;
-        });
+        var showText = function () { if (token === explainToken && box && document.body.contains(box)) box.hidden = false; };
+        try { TTS.speak(st.explain).then(showText, showText); } catch (er) { showText(); }
         break;
       }
       case 'helper': { var h = document.getElementById('helper'); h.hidden = !h.hidden; el.setAttribute('aria-expanded', String(!h.hidden)); break; }
@@ -822,6 +821,9 @@
       else if ($('[data-act="check"]') && !$('.pad-area.locked')) check();
     }
   }
+  /* Näytä mahdollinen virhe ruudulla, jotta vian voi kertoa tarkasti */
+  var VERSION = '2026-11-09c';
+  window.addEventListener('error', function (e) { try { toast('Hups, virhe: ' + esc(e.message || '') + ' (versio ' + VERSION + ')'); } catch (er) { /* ok */ } });
   $app.addEventListener('click', onClick);
   $ov.addEventListener('click', onOverlay);
   document.addEventListener('keydown', onKey);
