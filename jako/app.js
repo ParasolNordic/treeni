@@ -150,7 +150,7 @@
     var pct = nx != null ? Math.round(100 * (tot - STAGE_MIN[st]) / (nx - STAGE_MIN[st])) : 100;
     var pupCount = Object.keys(S.stars).filter(function (k) { return S.stars[k]; }).length;
     var tiles = [
-      ['examIntro', ICON.exam, 'Jakokoe', S.exam.bestGrade ? 'Paras arvosana ' + S.exam.bestGrade : 'Harjoituskoe, 20 tehtävää'],
+      ['examIntro', ICON.exam, 'Jakokoe', S.exam.bestGrade ? 'Paras arvosana ' + S.exam.bestGrade : 'Koe: tulokset vasta lopussa'],
       ['radar', ICON.radar, 'Virhetutka', S.errlog.length ? 'Mitä kannattaa treenata?' : 'Löytää virhepatternit'],
       ['park', ICON.park, 'Leikkipuisto', 'Noppa- ja kalastuspeli'],
       ['pups', ICON.pups, 'Pentue', pupCount + ' / ' + Q.TOPICS.length + ' pentua']
@@ -212,7 +212,7 @@
     }
     var stepInfo = !exam && q.steps.length > 1 ? '<span class="stepinfo">Vaihe ' + (sess.si + 1) + ' / ' + q.steps.length + '</span>' : '';
     var streak = !exam && S.streak >= 2 ? '<span class="streak" title="Huolellisuusputki">' + D.ICONS.paw('ico-paw', '#FF9F43') + S.streak + '</span>' : '';
-    var nav = exam ? '<div class="exam-nav"><button class="ghost" data-act="exam-prev"' + (sess.qi === 0 ? ' disabled' : '') + '>Edellinen</button>' +
+    var nav = exam ? '<p class="exam-note">Tämä on koe: vastauksia ei tarkisteta heti. Näet pisteet, oikeat vastaukset ja korjaukset, kun palautat kokeen lopussa.</p><div class="exam-nav"><button class="ghost" data-act="exam-prev"' + (sess.qi === 0 ? ' disabled' : '') + '>Edellinen</button>' +
       '<button class="cta" data-act="exam-next">' + (sess.qi === sess.qs.length - 1 ? 'Tarkista vastaukset' : 'Seuraava') + '</button></div>' : '';
     return '<header class="qhead"><button class="icon-btn" data-act="quit" aria-label="Lopeta">' + ICON.back + '</button><div class="qtitle"><b>' + title + '</b><span>' + sub + '</span></div>' + streak +
       (exam ? '<span class="timer" id="timer">' + elapsed() + '</span>' : '<div class="hud-bones small">' + D.ICONS.bone('ico-bone') + '<b>' + S.bones + '</b></div>') + '</header>' +
@@ -746,7 +746,7 @@
       }
       case 'helper': { var h = document.getElementById('helper'); h.hidden = !h.hidden; el.setAttribute('aria-expanded', String(!h.hidden)); break; }
       case 'exam-prev': examGo(sess.qi - 1); break;
-      case 'exam-next': if (sess.qi === sess.qs.length - 1) { examSave(); go('review'); } else examGo(sess.qi + 1); break;
+      case 'exam-next': examSave(); if (sess.answers[sess.qi]) toast('Vastaus tallennettu. Tulokset näet kokeen lopussa.'); if (sess.qi === sess.qs.length - 1) { examSave(); go('review'); } else examGo(sess.qi + 1); break;
       case 'exam-goto': if (view.name === 'review') { view = { name: 'level' }; sess.qi = +el.dataset.i; render(); window.scrollTo(0, 0); } else examGo(+el.dataset.i); break;
       case 'exam-back': view = { name: 'level' }; render(); break;
       case 'exam-submit': {
@@ -822,7 +822,7 @@
     }
   }
   /* Näytä mahdollinen virhe ruudulla, jotta vian voi kertoa tarkasti */
-  var VERSION = '2026-11-09c';
+  var VERSION = '2026-11-09d';
   window.addEventListener('error', function (e) { try { toast('Hups, virhe: ' + esc(e.message || '') + ' (versio ' + VERSION + ')'); } catch (er) { /* ok */ } });
   $app.addEventListener('click', onClick);
   $ov.addEventListener('click', onOverlay);
